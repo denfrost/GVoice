@@ -19,7 +19,6 @@ public class GVoiceSDK : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				"GVoiceSDK/Public",
-                "GVoiceSDK/Public/Include",
 				// ... add public include paths required here ...
 			}
 			);
@@ -60,7 +59,7 @@ public class GVoiceSDK : ModuleRules
 			);
 
 
-        string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, BuildConfiguration.RelativeEnginePath);
+        string PluginPath = Path.GetFullPath(Path.Combine(ModuleDirectory, "../../"));
         string GVoiceThirdPartyDir = Path.GetFullPath(Path.Combine(ModuleDirectory, "../ThirdParty/GVoiceSDKLibrary"));
 
         System.Console.WriteLine("-------------- PluginPath = " + PluginPath);
@@ -69,7 +68,7 @@ public class GVoiceSDK : ModuleRules
         {
             PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
 
-            string aplPath = Path.Combine(PluginPath, "GVoiceSDK_APL.xml");
+            string aplPath = Path.Combine(PluginPath, "Source/GVoiceSDK/GVoiceSDK_APL.xml");
             System.Console.WriteLine("-------------- AplPath = " + aplPath);
             AdditionalPropertiesForReceipt.Add(new ReceiptProperty("AndroidPlugin", aplPath));
         }
@@ -79,7 +78,6 @@ public class GVoiceSDK : ModuleRules
             PrivateIncludePaths.Add("GVoiceSDK/Private/IOS");
             PublicIncludePaths.AddRange(new string[] {"Runtime/ApplicationCore/Public/Apple", "Runtime/ApplicationCore/Public/IOS"});
 
-            
             PrivateDependencyModuleNames.AddRange(
                 new string[]{"ApplicationCore"
                 // ... add private dependencies that you statically link with here ...
@@ -108,24 +106,19 @@ public class GVoiceSDK : ModuleRules
 
         if (Target.Platform == UnrealTargetPlatform.Win32 || Target.Platform == UnrealTargetPlatform.Win64)
         {
-            PrivateIncludePaths.Add("GVoice/Private/");
+            PrivateIncludePaths.Add("GVoiceSDK/Public/GVoice/");
 
             string OSVersion = (Target.Platform == UnrealTargetPlatform.Win32) ? "x86" : "x64";
-            string libDir = OSVersion;
-            GVoiceLibPath = Path.Combine(GVoiceThirdPartyDir, libDir);
+            GVoiceLibPath = Path.Combine(GVoiceThirdPartyDir, OSVersion, "lib");
             PublicLibraryPaths.Add(GVoiceLibPath);
             Console.WriteLine("GVoiceLibPath:" + GVoiceLibPath);
 
-            if (Target.Configuration == UnrealTargetConfiguration.Debug && BuildConfiguration.bDebugBuildsActuallyUseDebugCRT)
-            {
-                PublicAdditionalLibraries.Add("GCloudVoice.lib");
-            }
-            else
-            {
-                PublicAdditionalLibraries.Add("GCloudVoice.lib");
-            }
+            PublicAdditionalLibraries.Add("GCloudVoice.lib");
+            PublicDelayLoadDLLs.Add("GCloudVoice.dll");
+            RuntimeDependencies.Add(new RuntimeDependency(Path.Combine(GVoiceLibPath, "GCloudVoice.dll")));
 
-            string binariesDir = Path.Combine(ModuleDirectory, "../../Binaries", Target.Platform.ToString());
+
+            string binariesDir = Path.Combine(PluginPath, "Binaries", Target.Platform.ToString());
             //string filename = Path.GetFileName(Filepath);
             string dllPath = Path.Combine(GVoiceLibPath, "GCloudVoice.dll");
             System.Console.WriteLine("src dll=" + dllPath + " dst dir=" + binariesDir);
@@ -160,25 +153,22 @@ public class GVoiceSDK : ModuleRules
         else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
             GVoiceLibPath = GVoiceThirdPartyDir;//
-string strLib = GVoiceLibPath+"/Mac/libGCloudVoice.a";
-PublicAdditionalLibraries.Add(strLib); 
+            string strLib = GVoiceLibPath+"/Mac/libGCloudVoice.a";
+            PublicAdditionalLibraries.Add(strLib); 
 
         }
         else if (Target.Platform == UnrealTargetPlatform.IOS)
         {
-            GVoiceLibPath = GVoiceThirdPartyDir;// 
-            Path.Combine(GVoiceLibPath, "iOS/");
-string strLib = GVoiceLibPath+"/iOS/libGCloudVoice.a";
-PublicAdditionalLibraries.Add(strLib);
-string strBundle = GVoiceLibPath+"/iOS/GCloudVoice.bundle";
+            GVoiceLibPath = GVoiceThirdPartyDir;
+            string strLib = GVoiceLibPath+"/iOS/libGCloudVoice.a";
+            PublicAdditionalLibraries.Add(strLib);
+            string strBundle = GVoiceLibPath+"/iOS/GCloudVoice.bundle";
 
-AdditionalBundleResources.Add(new UEBuildBundleResource("../ThirdParty/GVoiceSDKLibrary/iOS/GCloudVoice.bundle", bInShouldLog:false));
+            AdditionalBundleResources.Add(new UEBuildBundleResource("../ThirdParty/GVoiceSDKLibrary/iOS/GCloudVoice.bundle", bInShouldLog:false));
 
-System.Console.WriteLine("---framework path:"+Path.Combine(GVoiceLibPath, "VoiceFrameWork.embeddedframework.zip"));
+            System.Console.WriteLine("---framework path:"+Path.Combine(GVoiceLibPath, "VoiceFrameWork.embeddedframework.zip"));
 
-//PublicAdditionalFrameworks.Add(new UEBuildFramework("VoiceFWForBundle", "../ThirdParty/GVoiceSDKLibrary/iOS/VoiceFWForBundle.embeddedframework.zip", "iOS/GCloudVoice.bundle"));
-
-
+            //PublicAdditionalFrameworks.Add(new UEBuildFramework("VoiceFWForBundle", "../ThirdParty/GVoiceSDKLibrary/iOS/VoiceFWForBundle.embeddedframework.zip", "iOS/GCloudVoice.bundle"));
 
             PublicAdditionalLibraries.AddRange(
             new string[] {
