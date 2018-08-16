@@ -46,6 +46,8 @@ public class GVoiceSDK : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
+                "CoreUObject",
+                "Engine"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -126,7 +128,7 @@ public class GVoiceSDK : ModuleRules
                 Directory.CreateDirectory(binariesDir);
             try
             {
-                File.Copy(dllPath, Path.Combine(binariesDir, "GCloudVoice.dll"), true);
+                File.Copy(dllPath, Path.Combine(ModuleDirectory, "../../../../Binaries", Target.Platform.ToString(), "GCloudVoice.dll"), true);
             }
             catch (Exception e)
             {
@@ -211,10 +213,7 @@ public class GVoiceSDK : ModuleRules
         {
             PublicAdditionalLibraries.Add(in_libName);
         }
-        else if (Target.Platform == UnrealTargetPlatform.Mac)
-        {
-        }
-        else
+        else if (!(Target.Platform == UnrealTargetPlatform.Mac))
         {
             PublicAdditionalLibraries.Add(in_libName + ".lib");
         }
