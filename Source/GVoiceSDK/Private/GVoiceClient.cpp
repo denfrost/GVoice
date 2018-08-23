@@ -6,6 +6,7 @@ UGVoiceClient* UGVoiceClient::GVoiceClient = nullptr;
 
 UGVoiceClient::~UGVoiceClient()
 {
+	delete m_VoiceEngine;
 }
 
 UGVoiceClient::UGVoiceClient(const FObjectInitializer& ObjectInitializer)
@@ -16,9 +17,11 @@ UGVoiceClient::UGVoiceClient(const FObjectInitializer& ObjectInitializer)
 
 void UGVoiceClient::Initializer()
 {
-	/*if (GVoiceClient->IsValidLowLevel())
+	if (!(GVoiceClient && GVoiceClient->IsValidLowLevel()))
 	{
-	}*/
+		GVoiceClient = NewObject<UGVoiceClient>();
+		GVoiceClient->AddToRoot();
+	}
 }
 
 UGVoiceClient* UGVoiceClient::GetVoiceClient()

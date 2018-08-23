@@ -18,12 +18,16 @@ class GVOICESDK_API UGVoiceClient : public UObject
 public:
 	virtual ~UGVoiceClient();
 
+	/**
+	 * Get or New a voice client instance(if not exist), singleton object.
+	 *
+	 * @return UVoiceClient pointer
+	 */
 	UFUNCTION(BlueprintPure, Category = "GVoice")
 		static UGVoiceClient* GetVoiceClient();
 	
 private:
 	UGVoiceClient(const FObjectInitializer& ObjectInitializer);
-
 	static void Initializer();
 
 private:
