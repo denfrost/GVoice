@@ -6,7 +6,7 @@ UGVoiceClient* UGVoiceClient::GVoiceClient = nullptr;
 
 UGVoiceClient::~UGVoiceClient()
 {
-	delete m_VoiceEngine;
+	//delete m_VoiceEngine;
 }
 
 void UGVoiceClient::Tick(float DeltaTime)
@@ -70,5 +70,15 @@ int32 UGVoiceClient::OnPause()
 int32 UGVoiceClient::OnResume()
 {
 	return m_VoiceEngine->Resume();
+}
+
+int32 UGVoiceClient::JoinTeamRoom(const FString& RoomName, int32 msTimeout)
+{
+	return 0;
+}
+
+int32 UGVoiceClient::JoinNationalRoom(const FString& RoomName, EVoiceMemberRole MemberRole, int32 msTimeout)
+{
+	return 0;
 }
 

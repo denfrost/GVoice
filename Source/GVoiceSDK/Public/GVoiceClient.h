@@ -22,6 +22,16 @@ enum class EVoiceMode : uint8
 	HIGHQUALITY = 4,
 };
 
+UENUM(BlueprintType)
+enum class EVoiceMemberRole : uint8
+{
+	/* member who can open microphone and say */
+	Anchor = 1,
+	/* member who can only hear anchor's voice */
+	Audience,
+};
+
+
 /**
  * 
  */
@@ -99,6 +109,29 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "GVoice")
 		int32 OnResume();
+
+	/**
+	* Join in team room.
+	*
+	* @param RoomName the room to join, should be less than 127byte, composed by alpha.
+	* @param msTimeout time for join, it is micro second. value range[5000, 60000]
+	* @return if already joined this room return -1, if success return 0, failed return other errno @see GCloudVoiceErrno
+	* @see : GCloudVoiceErrno
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Voice Plug-in")
+		int32 JoinTeamRoom(const FString& RoomName, int32 msTimeout);
+
+	/**
+	* Join in a national room.
+	*
+	* @param RoomName the room to join, should be less than 127byte, composed by alpha.
+	* @param role a GCloudVoiceMemberRole value illustrate wheather can send voice data.
+	* @param msTimeout time for join, it is micro second. value range[5000, 60000]
+	* @return if already joined this room return -1, if success return 0, failed return other errno @see GCloudVoiceErrno
+	* @see : GCloudVoiceErrno
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Voice Plug-in")
+		int32 JoinNationalRoom(const FString& RoomName, EVoiceMemberRole MemberRole, int32 msTimeout);
 	
 private:
 	UGVoiceClient(const FObjectInitializer& ObjectInitializer);
@@ -109,4 +142,5 @@ private:
 	static UGVoiceClient* GVoiceClient;
 	
 	class gcloud_voice::IGCloudVoiceEngine* m_VoiceEngine;
+	TArray<FString> JoinedRoomName;
 };
